@@ -5,8 +5,10 @@ import authConfig from "./auth.config";
 import { db } from "./lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { getUserByEmail, getUserById } from "../data/user";
+import { getTwoFactorConfirmationByUserId } from "../data/two-factor-confirmation";
 type ExtendedUser = DefaultSession["user"] & {
 	role: "ADMIN" | "USER";
+	isTwoFactorEnabled: boolean;
 };
 declare module "next-auth" {
 	interface Session {
@@ -44,7 +46,18 @@ export const {
 				return false;
 			}
 
-			//TODO: Add 2FA check
+			if (existingUser.isTwoFactorEnables) {
+				const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+					existingUser.id
+				);
+				if (!twoFactorConfirmation) return false;
+
+				//delete two factor confirmation for next sign in
+				await db.twoFactorConfirmation.delete({
+					where: { id: twoFactorConfirmation.id },
+				});
+			}
+
 			return true;
 		},
 		async session({ token, session }) {
@@ -54,6 +67,10 @@ export const {
 
 			if (token.role && session.user) {
 				session.user.role = token.role;
+			}
+
+			if (session.user) {
+				session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
 			}
 
 			return session;
@@ -67,6 +84,7 @@ export const {
 			}
 
 			token.role = existingUser.role;
+			token.isTwoFactorEnabled = existingUser.isTwoFactorEnables;
 
 			return token;
 		},

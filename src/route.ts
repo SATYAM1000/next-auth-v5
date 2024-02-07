@@ -6,26 +6,29 @@
  * @type {string[]}
  */
 
-export const publicRoutes:String[] = ["/","/auth/new-verification"];
+export const publicRoutes: String[] = ["/", "/auth/new-verification"];
 
 /**An array of routes that are used for authentication
  * these routes will redirect logged in users to /settings
  * @type {string[]}
  */
 
-
-export const authRoutes:String[]=["/auth/login", "/auth/register", "/auth/error"]
+export const authRoutes: String[] = [
+	"/auth/login",
+	"/auth/register",
+	"/auth/error",
+    "/auth/reset",
+	"/auth/new-password",
+];
 
 /**The prefix for API authentication routes
  * Routes that start with this prefix are used for API authentication purposes
  * @type {string}
  */
 
+export const apiAuthPrefix = "/api/auth";
 
-export const apiAuthPrefix="/api/auth";
-
-/**The deafult redirect path after logging in 
+/**The deafult redirect path after logging in
  * @type {string}
-*/
-export const DEFAULT_LOGIN_REDIRECT='/settings'
-
+ */
+export const DEFAULT_LOGIN_REDIRECT = "/settings";

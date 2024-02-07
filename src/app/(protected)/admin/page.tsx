@@ -27,7 +27,7 @@ const AdminPage = () => {
 				</div>
 
                 <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-md">
-					<p className="text-sm font-medium">Admin-only Server Action</p>
+					<p className="text-sm font-medium">Admin-only Server Actions</p>
                     <Button>
                         Click to test
                     </Button>

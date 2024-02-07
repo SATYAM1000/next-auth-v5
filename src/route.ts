@@ -6,7 +6,7 @@
  * @type {string[]}
  */
 
-export const publicRoutes:String[] = ["/"];
+export const publicRoutes:String[] = ["/","/auth/new-verification"];
 
 /**An array of routes that are used for authentication
  * these routes will redirect logged in users to /settings

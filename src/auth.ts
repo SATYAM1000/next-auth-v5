@@ -6,9 +6,11 @@ import { db } from "./lib/db";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { getUserByEmail, getUserById } from "../data/user";
 import { getTwoFactorConfirmationByUserId } from "../data/two-factor-confirmation";
+import { getAccountByUserId } from "../data/account";
 type ExtendedUser = DefaultSession["user"] & {
 	role: "ADMIN" | "USER";
 	isTwoFactorEnabled: boolean;
+	isOAuth: boolean;
 };
 declare module "next-auth" {
 	interface Session {
@@ -70,19 +72,34 @@ export const {
 			}
 
 			if (session.user) {
-				session.user.isTwoFactorEnabled = token.isTwoFactorEnabled;
+				session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean;
+			}
+
+			//important while updating session data
+
+			if (session.user) {
+				session.user.name = token.name;
+				session.user.email = token.email;
+				session.user.isOAuth = token.isOAuth as boolean;
 			}
 
 			return session;
 		},
 		async jwt({ token, user, profile }) {
+			console.log("I AM BEING CALLD AGAIN!");
 			if (!token.sub) return token;
 
 			const existingUser = await getUserById(token.sub);
 			if (!existingUser) {
 				return token;
 			}
+			const existingAccount = await getAccountByUserId(existingUser.id);
+			token.isOAuth = !!existingAccount;
 
+			//important while updating
+			token;
+			token.name = existingUser.name;
+			token.email = existingUser.email;
 			token.role = existingUser.role;
 			token.isTwoFactorEnabled = existingUser.isTwoFactorEnables;
 
